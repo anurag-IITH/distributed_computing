@@ -37,12 +37,12 @@ class Vector{
             }
         }
     //~Vector();
-    void internalEvent(int threadid) 
+    void internalEvent(int processID) 
     {
-        clock[threadid] = clock[threadid] + 1;
+        clock[processID] = clock[processID] + 1;
     }
     
-    // void msgSend(int threadid)
+    // void msgSend(int processID)
     // {
 
     // }
@@ -64,7 +64,7 @@ class Vector{
 
 };
 
-void testInternalEvents(Vector &Test, int threadid, int nofInternalEvents, int lambda)
+void testInternalEvents(Vector &Test, int processID, int nofInternalEvents, int lambda)
 {
 		std::default_random_engine generator;
         std::exponential_distribution<double> distribution (1.0/lambda);
@@ -75,8 +75,8 @@ void testInternalEvents(Vector &Test, int threadid, int nofInternalEvents, int l
         mtx.lock();
         ofstream myfile;
         myfile.open ("file.txt", ios::app);
-        myfile << "Process" << threadid+1 << " executes";        
-        Test.internalEvent(threadid); 
+        myfile << "Process" << processID+1 << " executes";        
+        Test.internalEvent(processID); 
         double sleep_time = distribution (generator);       
         int *a1;
         a1 = Test.getClock();
@@ -88,7 +88,7 @@ void testInternalEvents(Vector &Test, int threadid, int nofInternalEvents, int l
         int min    = local->tm_min;
         int sec    = local->tm_sec;
        
-        myfile <<" internal event e" << threadid+1 << internalEventNumber << " at " << hour << ":" << min <<":" << sec << ", vc: [";
+        myfile <<" internal event e" << processID+1 << internalEventNumber << " at " << hour << ":" << min <<":" << sec << ", vc: [";
         for(int i =0; i < 3; i++)
         {
             myfile << a1[i] <<" ";
@@ -101,14 +101,14 @@ void testInternalEvents(Vector &Test, int threadid, int nofInternalEvents, int l
 
 }
 
-void testRecvEvents(Vector &Test, int threadid)
+void testRecvEvents(Vector &Test, int processID)
 {                      
     int a[3] = {1,2,3};
     receiveEventNumber = receiveEventNumber + 1;
     mtx.lock();
     ofstream myfile;
     myfile.open ("file.txt", ios::app);
-    myfile << "Process" << threadid+1 << " receives";    
+    myfile << "Process" << processID+1 << " receives";    
     Test.msgRecv(a);
     int *a1;
     a1 = Test.getClock();
@@ -119,7 +119,7 @@ void testRecvEvents(Vector &Test, int threadid)
     int hour   = local->tm_hour;
     int min    = local->tm_min;
     int sec    = local->tm_sec;
-    myfile <<" m" << threadid+1 << receiveEventNumber << " at " << hour << ":" << min <<":" << sec << ", vc: [";
+    myfile <<" m" << processID+1 << receiveEventNumber << " at " << hour << ":" << min <<":" << sec << ", vc: [";
     for(int i =0; i < 3; i++)
     {
         myfile << a1[i] <<" ";
@@ -132,7 +132,7 @@ void testRecvEvents(Vector &Test, int threadid)
 int main()
 {
 	//read the input from the file
-
+    
     std::fstream myfile("inp-params.txt", std::ios_base::in);
 
     int nodes, lambda, alpha, i = 0;
